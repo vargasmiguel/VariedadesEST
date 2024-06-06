@@ -24,7 +24,7 @@ st.html('<h1 style="text-align: center;">Lie Groups Geometry</h1>')
 st.markdown('<p style="text-align: right;"><span style="font-size: 12px; color: rgb(124, 112, 107);">Andr&eacute;s Villab&oacute;n</span> &nbsp;<a href="https://orcid.org/0000-0002-9022-4459" target="_blank" rel="noopener noreferrer"><img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="12" height="12"></a>&nbsp;<a href="https://www.linkedin.com/in/andres-villabon-95ba37232" target="_blank" rel="noopener noreferrer"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/72px-LinkedIn_icon.svg.png" width="12" height="12"></a><br><span style="font-size: 12px; color: rgb(124, 112, 107);">Miguel Vargas</span>&nbsp; <a href="https://orcid.org/0000-0002-7624-9756" target="_blank" rel="noopener noreferrer"><img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="12" height="12"></a>&nbsp;<a href="https://www.linkedin.com/in/miguel-vargas-valencia-51146b101" target="_blank" rel="noopener noreferrer"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/72px-LinkedIn_icon.svg.png" width="12" height="12"></a></p>', unsafe_allow_html=True)
 
 
-steps=st.tabs(["Set dimension", "Structure constants $c_{i,j}^{k}$", "Semi-Metric", "Compute Symbols", "Curvature"])
+steps=st.tabs(["Set dimension", "Structure constants $c_{i,j}^{k}$", "Quadratic Lie Group", "Flat affine Lie Group"])
 
 with steps[0]:
     n=st.number_input("Lie Group dimension",min_value=2,max_value=10,step=1)
@@ -114,139 +114,228 @@ with steps[1]:
 
 
 with steps[2]:
-    st.markdown(r'Given a bi-invariant semi-Riemannian metric $k^+$ on a Lie group $G$ is eqivalent to give a scalar product $k$ on its Lie algebra $\mathfrak{g}$ such that')
-    displaylatex(r'k(ad_xy,z)+k(y,ad_xz)=0',[1,2,1])
-    st.markdown(r'for all $x,y,z\in\mathfrak{g}$.')
-    if 'cond' in st.session_state:
-        if st.session_state['cond']==False:
-            st.error("You don't have a Lie Algebra yet.")
-        else:
-            n=st.session_state.n
-            indx=[]
-            for i in list(range(1,n+1)):
-                indx.append(str(i))
-            m={"i-j":indx}
-            for i in range(1,n+1):
-                m[i]=n*[0]
+    steps_2=st.tabs(["Semi-Metric", "Compute Symbols", "Curvature"])
+    with steps_2[0]:
+        st.markdown(r'Given a bi-invariant semi-Riemannian metric $k^+$ on a Lie group $G$ is eqivalent to give a scalar product $k$ on its Lie algebra $\mathfrak{g}$ such that')
+        displaylatex(r'k(ad_xy,z)+k(y,ad_xz)=0',[1,2,1])
+        st.markdown(r'for all $x,y,z\in\mathfrak{g}$.')
+        if 'cond' in st.session_state:
+            if st.session_state['cond']==False:
+                st.error("You don't have a Lie Algebra yet.")
+            else:
+                n=st.session_state.n
+                indx=[]
+                for i in list(range(1,n+1)):
+                    indx.append(str(i))
+                m={"i-j":indx}
+                for i in range(1,n+1):
+                    m[i]=n*[0]
 
-            matrix_df=pd.DataFrame(data=m)
+                matrix_df=pd.DataFrame(data=m)
 
-            st.session_state["matrix_df"]=matrix_df.fillna(0)
-            if 'matrix_df' in st.session_state:
-                st.write('In the table below, please input the matrix that defines your semi-metric in relation to the basis you utilized for the structure constants.')
-                matrix_df=st.data_editor(st.session_state.matrix_df, hide_index=True, disabled=["i-j"])
-            
-            if st.button("Set Semi-metric", type='primary'):
-                del st.session_state["matrix_df"]
-                st.session_state["matrix_df"]=matrix_df
-                m_c=matrix_df.columns[1:]
-                metric=matrix_df[m_c].to_numpy()
-                if (np.array_equal(metric.transpose(), metric)) and (np.linalg.det(metric) !=0):
-                    st.session_state["metric"]=metric
-                    n=st.session_state.n
-                    c=st.session_state.structure
-                    bi_inv={}
-                    ix=lambda i,j,k: "{},{}:{}".format(i,j,k)
-                    for k in range(1,n+1):
-                        a=np.empty((n,n))
-                        for i in range(1,n+1):
-                            col=[]
-                            for j in range(1,n+1):
-                                col.append(c[ix(k,j,i)])
-                            a[i-1]=col
-                        if np.array_equal(np.matmul(a.transpose(),metric), (-1)*np.matmul(metric,a)):
-                            bi_inv[k]=1
+                st.session_state["matrix_df"]=matrix_df.fillna(0)
+                if 'matrix_df' in st.session_state:
+                    st.write('In the table below, please input the matrix that defines your semi-metric in relation to the basis you utilized for the structure constants.')
+                    matrix_df=st.data_editor(st.session_state.matrix_df, hide_index=True, disabled=["i-j"])
+                
+                if st.button("Set Semi-metric", type='primary'):
+                    del st.session_state["matrix_df"]
+                    st.session_state["matrix_df"]=matrix_df
+                    m_c=matrix_df.columns[1:]
+                    metric=matrix_df[m_c].to_numpy()
+                    if (np.array_equal(metric.transpose(), metric)) and (np.linalg.det(metric) !=0):
+                        st.session_state["metric"]=metric
+                        n=st.session_state.n
+                        c=st.session_state.structure
+                        bi_inv={}
+                        ix=lambda i,j,k: "{},{}:{}".format(i,j,k)
+                        for k in range(1,n+1):
+                            a=np.empty((n,n))
+                            for i in range(1,n+1):
+                                col=[]
+                                for j in range(1,n+1):
+                                    col.append(c[ix(k,j,i)])
+                                a[i-1]=col
+                            if np.array_equal(np.matmul(a.transpose(),metric), (-1)*np.matmul(metric,a)):
+                                bi_inv[k]=1
+                            else:
+                                bi_inv[k]=0
+                        bi_inv_f={k: v for k, v in bi_inv.items() if v==0}
+                        falses=bi_inv_f.keys()
+                        if len(falses)>0:
+                            f_str=', '.join([str(x) for x in falses])
+                            st.markdown("$ad_{e_{i}}^{T} \; k \\neq - k \; ad_{e_{i}}$")
+                            st.warning("Your Semi-metric is not Bi-invariant. Condition fails for i={}".format(f_str))
+                            st.session_state['biinv']=False
                         else:
-                            bi_inv[k]=0
-                    bi_inv_f={k: v for k, v in bi_inv.items() if v==0}
-                    falses=bi_inv_f.keys()
-                    if len(falses)>0:
-                        f_str=', '.join([str(x) for x in falses])
-                        st.markdown("$ad_{e_{i}}^{T} \; k \\neq - k \; ad_{e_{i}}$")
-                        st.warning("Your Semi-metric is not Bi-invariant. Condition fails for i={}".format(f_str))
-                    else:
-                        st.success("You have a Bi-invariant Semi-metric.")
-                    
-                    st.success("You set a Semi-metric. Go to Compute Symbols tab ➡️",  icon=":material/thumb_up:")
+                            st.success("You have a Bi-invariant Semi-metric.")
+                            st.session_state['biinv']=True
+                        
+                        st.success("You set a Semi-metric. Go to Compute Symbols tab ➡️",  icon=":material/thumb_up:")
 
+                    else:
+                        st.error("Your matrix does not define a Semi-metric. Rebemer that you need a symmetric and non-degenerate matrix")
+        else:
+            st.warning("⚠️ You don't have a Lie Algebra yet. ⚠️")
+
+    with steps_2[1]:
+        st.html('<h3>Levi-Civita Connection</h3>')
+        st.markdown("A basis $\{e_1,\ldots,e_n\}$ for the Lie algebra $\mathfrak{g}$ define left-invariant vector field $\{e_1^+,\ldots,e_n^+\}$ on the Lie group $G$. Hence, the Christoffel symbols can be written")
+        displaylatex("\\nabla_{e_i^+}e_j^+=\sum_{k=1}^n\Gamma_{ij}^ke_k^+",[1,2,1])
+        if st.button('Compute', type='primary'):
+            if "metric" in st.session_state:
+                K=st.session_state["metric"]
+                K_inv=np.linalg.inv(K)
+                c=st.session_state.structure
+                n=st.session_state.n
+                ix=lambda i,j,k: "{},{}:{}".format(i,j,k)
+                # Christoffel symbols Levi-Civita
+                c_nn=0
+                gammaK = [[[0 for i in range(n)] for j in range(n)] for k in range(n)]
+                for i in range(1,n+1):
+                    for j in range(1,n+1):
+                        for k in range(1,n+1):
+                            gammaK[i-1][j-1][k-1]=0
+                            for l in range(1,n+1):
+                                for m in range(1,n+1):
+                                    gammaK[i-1][j-1][k-1] += 0.5 * (K_inv[k-1,l-1]*(-K[j-1,m-1]*c[ix(i,l,m)]-K[l-1,m-1]*c[ix(j,i,m)]+K[i-1,m-1]*c[ix(l,j,m)]))
+                            if gammaK[i-1][j-1][k-1] != 0:
+                                c_nn=+1
+                st.session_state["symbols"]=gammaK
+
+                if c_nn >0 :
+                    st.write("Non-null Christoffel symbols: ")
+                
+                    for i in range(n):
+                        for j in range(n):
+                            for k in range(n):
+                                if gammaK[i][j][k]!=0:
+                                    st.write("$\Gamma"+'_{'+ str(i+1) +','+  str(j+1) +'}^{'+  str(k+1) +  "} = "+ "{:.2f}".format(gammaK[i][j][k])+"$")
                 else:
-                    st.error("Your matrix does not define a Semi-metric. Rebemer that you need a symmetric and non-degenerate matrix")
-    else:
-        st.warning("⚠️ You don't have a Lie Algebra yet. ⚠️")
+                    st.success("You set a flat space. All Christoffel symbols are zero")
+            else:
+                st.warning("⚠️ You have to define a Semi-metric ⚠️")
+    with steps_2[2]:
+        st.markdown("In terms of the parallelims $\{e_1^+,\ldots,e_n^+\}$ on the Lie group $G$, the curvature of the connection $\\nabla$ is")
+        displaylatex("R\left(e_i^+,e_j^+\\right)=\\nabla_{e_i^+}\\nabla_{e_j^+}-\\nabla_{e_j^+}\\nabla_{e_i^+}-\\nabla_{\left[e_i^+,e_j^+\\right]}",[1,3,1])
+        if st.button("Curvature", type="primary"):
+            if 'symbols' in st.session_state:
+                G=st.session_state["symbols"]
+                n=st.session_state["n"]
+                c=st.session_state["structure"]
+                ix=lambda i,j,k: "{},{}:{}".format(i,j,k)
+                Ds={}
+                for k in range(n):
+                    D=np.empty((n,n))
+                    for i in range(n):
+                        col=[]
+                        for j in range(n):
+                            col.append(G[k][j][i])
+                        D[i]=col
+                    Ds[k+1]=D
+                curvature=0
+                for i in range(1,n+1):
+                    for j in range(1,n+1):
+                        nab_ij=np.zeros((n,n))
+                        for k in range(1,n+1):
+                            nab_ij=nab_ij+c[ix(i,j,k)]*Ds[k]
+                        R=np.matmul(Ds[i],Ds[j])-np.matmul(Ds[j],Ds[i])-nab_ij
+                        if R.any() != 0:
+                            st.markdown("$R\left(e_{}^+,e_{}^+\\right) \\neq \mathbf{}$".format(i,j,0))
+                            curvature+=1
+                if curvature == 0:
+                    st.success("You have null curvature", icon=":material/thumb_up:")
+                else:
+                    st.warning("⚠️ You have Non-null curvature ⚠️")
+
+
+            else:
+                st.warning("⚠️ You have to Compute the Christoffel Symbols ⚠️")
+
 
 with steps[3]:
-    st.html('<h3>Levi-Civita Connection</h3>')
-    st.markdown("A basis $\{e_1,\ldots,e_n\}$ for the Lie algebra $\mathfrak{g}$ define left-invariant vector field $\{e_1^+,\ldots,e_n^+\}$ on the Lie group $G$. Hence, the Christoffel symbols can be written")
-    displaylatex("\\nabla_{e_i^+}e_j^+=\sum_{k=1}^n\Gamma_{ij}^ke_k^+",[1,2,1])
-    if st.button('Compute', type='primary'):
-        if "metric" in st.session_state:
-            K=st.session_state["metric"]
-            K_inv=np.linalg.inv(K)
-            c=st.session_state.structure
-            n=st.session_state.n
-            ix=lambda i,j,k: "{},{}:{}".format(i,j,k)
-            # Christoffel symbols Levi-Civita
-            c_nn=0
-            gammaK = [[[0 for i in range(n)] for j in range(n)] for k in range(n)]
-            for i in range(1,n+1):
-                for j in range(1,n+1):
-                    for k in range(1,n+1):
-                        gammaK[i-1][j-1][k-1]=0
-                        for l in range(1,n+1):
-                            for m in range(1,n+1):
-                                gammaK[i-1][j-1][k-1] += 0.5 * (K_inv[k-1,l-1]*(-K[j-1,m-1]*c[ix(i,l,m)]-K[l-1,m-1]*c[ix(j,i,m)]+K[i-1,m-1]*c[ix(l,j,m)]))
-                        if gammaK[i-1][j-1][k-1] != 0:
-                            c_nn=+1
-            st.session_state["symbols"]=gammaK
-
-            if c_nn >0 :
-                st.write("Non-null Christoffel symbols: ")
-            
-                for i in range(n):
-                    for j in range(n):
-                        for k in range(n):
-                            if gammaK[i][j][k]!=0:
-                                st.write("$\Gamma"+'_{'+ str(i+1) +','+  str(j+1) +'}^{'+  str(k+1) +  "} = "+ "{:.2f}".format(gammaK[i][j][k])+"$")
-            else:
-                st.success("You set a flat space. All Christoffel symbols are zero")
-        else:
-            st.warning("⚠️ You have to define a Semi-metric ⚠️")
-with steps[4]:
-    st.markdown("In terms of the parallelims $\{e_1^+,\ldots,e_n^+\}$ on the Lie group $G$, the curvature of the connection $\\nabla$ is")
-    displaylatex("R\left(e_i^+,e_j^+\\right)=\\nabla_{e_i^+}\\nabla_{e_j^+}-\\nabla_{e_j^+}\\nabla_{e_i^+}-\\nabla_{\left[e_i^+,e_j^+\\right]}",[1,3,1])
-    if st.button("Curvature", type="primary"):
-        if 'symbols' in st.session_state:
-            G=st.session_state["symbols"]
+    steps_3=st.tabs([ "Left Invariant Connection", "Dual Connection"])
+    with steps_3[0]:
+        if "structure" in st.session_state:
             n=st.session_state["n"]
-            c=st.session_state["structure"]
-            ix=lambda i,j,k: "{},{}:{}".format(i,j,k)
-            Ds={}
-            for k in range(n):
-                D=np.empty((n,n))
-                for i in range(n):
-                    col=[]
-                    for j in range(n):
-                        col.append(G[k][j][i])
-                    D[i]=col
-                Ds[k+1]=D
-            curvature=0
+            st.html('<h3>Left Invariant Connections</h3>')
+            st.write("Input the matrix representation of the left product respect to each $e_i$")
+                
+            temp=pd.DataFrame()
+
             for i in range(1,n+1):
-                for j in range(1,n+1):
-                    nab_ij=np.zeros((n,n))
-                    for k in range(1,n+1):
-                        nab_ij=nab_ij+c[ix(i,j,k)]*Ds[k]
-                    R=np.matmul(Ds[i],Ds[j])-np.matmul(Ds[j],Ds[i])-nab_ij
-                    if R.any() != 0:
-                        st.markdown("$R\left(e_{}^+,e_{}^+\\right) \\neq \mathbf{}$".format(i,j,0))
-                        curvature+=1
-            if curvature == 0:
-                st.success("You have null curvature", icon=":material/thumb_up:")
-            else:
-                st.warning("⚠️ You have Non-null curvature ⚠️")
+                temp[f"e_{i}"] = n*[0]
+            lic_df={}   # Dataframes de los e_k e_i, k=1...n
+            lic={}      # Arrays de numpy de los e_k e_i
+            for i in range(1,n+1):
+                st.write(f"$e_{i}"+ " \; e_{i}$:")
+                lic_df[i]=temp.copy()
+                lic_df[i]=st.data_editor(lic_df[i], hide_index=True , key=f"lic_df{i}")
+                lic[i]=lic_df[i].to_numpy() 
+            
+            if st.button("Save connections", type="primary"):
+                with st.spinner('Verifying null-torsion and null-curvature'):
+                    sleep(1)
+                    # Verificar condiciones:
+                    # s_ij^k - s_ji^k - c_ij^k = 0
+                    # s_ij^k := lic[i][k-1][j-1]   ## es k-1 y j-1 por que numpy enumera desde 0
+                    c=st.session_state["structure"]
+                    ix=lambda i,j,k: "{},{}:{}".format(i,j,k)
+                    torsion=set([])
+                    for i in range(1,n+1):
+                        for j in range(1,n+1):
+                            for k in range(1,n+1):
+                                if lic[i][k-1][j-1] - lic[j][k-1][i-1] != c[ix(i,j,k)]:
+                                    torsion.add(frozenset({i,j}))
+                    if len(torsion)>0:
+                        k_tor=1
+                        st.warning("Non-null torsion detected")
+                        for t in torsion:
+                            t=list(t)
+                            st.markdown(f"$e_{t[0]} \; e_{t[1]} - e_{t[1]} \; e_{t[0]} \\neq [ e_{t[0]}, e_{t[1]} ] $")
+                
+                    else:
+                        k_tor=0
+                        st.success("Null torsion detected")
+                    
+                    #segunda condición
+                    # sum_{k} c_ij^k Le_k = Le_i Le_j - L_ej Le_i
+                    curv=set([])
+                    for i in range(1,n+1):
+                        for j in range(1,n+1):
+                            C=np.matmul(lic[i],lic[j]) - np.matmul(lic[j],lic[i])
+                            sc=np.zeros((n,n))
+                            for k in range(1,n+1):
+                                sc=sc+c[ix(i,j,k)]*lic[k]
+                            R=sc-C
+                            if R.any() != 0:
+                                curv.add(frozenset({i,j}))
+                    if len(curv)>0:
+                        k_cur=1
+                        st.warning("Non-null curvature detected")
+                        for c in curv:
+                            c=list(c)
+                            st.markdown("$ L_{[e_{"+str(c[0])+"},e_{"+str(c[1])+"}]} \\neq [L_{e_{"+str(c[0])+"} }, L_{e_{"+str(c[1])+"} } ]$")
+                    else:
+                        k_cur=0
+                        st.success("Null curvature detected")
+                    
+                    if k_tor+k_cur == 0:
+                        st.session_state["LIC"]=lic
+                        st.success("Flat affine connection saved")
+                    else:
+                        st.error("Not flat affine")
+        else:
+            st.warning("⚠️ You have to define Structure constants ⚠️")
+
+    with steps_3[1]:
+        if "LIC" in st.session_state:
+            lic=st.session_state.LIC
 
 
         else:
-            st.warning("⚠️ You have to Compute the Christoffel Symbols ⚠️")
+            st.warning("⚠️ You have to define the Left Invariant Connection ⚠️")
+
 
 st.html('<p><br></p>')
 st.caption("This application is part of the research project PGI2101ECBTI2024 of [UNAD](https://www.unad.edu.co/).")
