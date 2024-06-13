@@ -18,11 +18,16 @@ def displaylatex(s, l):
         st.markdown('$\displaystyle {}$'.format(s))
     #return st.html('''<p style="text-align: center;><span class="math math-inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle scriptlevel="0" displaystyle="true"><mo stretchy="false">[</mo><msub><mi>e</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>e</mi><mi>j</mi></msub><mo stretchy="false">]</mo><mo>=</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>c</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>k</mi></msubsup><msub><mi>e</mi><mi>k</mi></msub></mstyle></mrow><annotation encoding="application/x-tex">\displaystyle {}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1.0361em; vertical-align: -0.2861em;"></span><span class="mopen">[</span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3117em;"><span style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3117em;"><span style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.2861em;"><span></span></span></span></span></span></span><span class="mclose">]</span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="base"><span class="strut" style="height: 2.9535em; vertical-align: -1.3021em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.6514em;"><span style="top: -1.8479em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right: 0.03148em;">k</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top: -3.05em;"><span class="pstrut" style="height: 3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top: -4.3em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.3021em;"><span></span></span></span></span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.8991em;"><span style="top: -2.453em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right: 0.05724em;">ij</span></span></span></span><span style="top: -3.113em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.3831em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span></span></span></span></span></span></span></span></span></span></span></p>'''.format(s))
 
+def bmatrix(a):
+    lines = str(a).replace('[', '').replace(']', '').splitlines()
+    rv = [r'\begin{bmatrix}']
+    rv += ['  ' + ' & '.join(l.split()) + r'\\' for l in lines]
+    rv +=  [r'\end{bmatrix}']
+    return ' '.join(rv)
 
 st.html('<h1 style="text-align: center;">Lie Groups Geometry</h1>')
 
 st.markdown('<p style="text-align: right;"><span style="font-size: 12px; color: rgb(124, 112, 107);">Andr&eacute;s Villab&oacute;n</span> &nbsp;<a href="https://orcid.org/0000-0002-9022-4459" target="_blank" rel="noopener noreferrer"><img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="12" height="12"></a>&nbsp;<a href="https://www.linkedin.com/in/andres-villabon-95ba37232" target="_blank" rel="noopener noreferrer"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/72px-LinkedIn_icon.svg.png" width="12" height="12"></a><br><span style="font-size: 12px; color: rgb(124, 112, 107);">Miguel Vargas</span>&nbsp; <a href="https://orcid.org/0000-0002-7624-9756" target="_blank" rel="noopener noreferrer"><img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="12" height="12"></a>&nbsp;<a href="https://www.linkedin.com/in/miguel-vargas-valencia-51146b101" target="_blank" rel="noopener noreferrer"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/72px-LinkedIn_icon.svg.png" width="12" height="12"></a></p>', unsafe_allow_html=True)
-
 
 steps=st.tabs(["Set dimension", "Structure constants $c_{i,j}^{k}$", "Quadratic Lie Group", "Flat affine Lie Group"])
 
@@ -100,7 +105,7 @@ with steps[1]:
                                     
                 if si==0:
                     st.session_state['cond']=True
-                    st.success("You have a Lie Algebra Structure. Go to Metric tab ➡️",  icon=":material/thumb_up:")
+                    st.success("You have a Lie Algebra Structure. Go to Quadratic Lie Group or Flat affine Lie Group tabs ➡️",  icon=":material/thumb_up:")
                     st.session_state["structure"]=struc
 
                 else:
@@ -258,7 +263,7 @@ with steps[3]:
     with steps_3[0]:
         if "structure" in st.session_state:
             n=st.session_state["n"]
-            st.html('<h3>Left Invariant Connections</h3>')
+            #st.html('<h3>Left Invariant Connections</h3>')
             st.write("Input the matrix representation of the left product respect to each $e_i$")
                 
             temp=pd.DataFrame()
@@ -322,7 +327,7 @@ with steps[3]:
                     
                     if k_tor+k_cur == 0:
                         st.session_state["LIC"]=lic
-                        st.success("Flat affine connection saved")
+                        st.success("Flat affine connection saved. Go to Dual Connection tab ➡️")
                     else:
                         st.error("Not flat affine")
         else:
@@ -331,6 +336,38 @@ with steps[3]:
     with steps_3[1]:
         if "LIC" in st.session_state:
             lic=st.session_state.LIC
+            n=st.session_state.n
+            indx=[]
+            for i in list(range(1,n+1)):
+                indx.append(str(i))
+            m={"i-j":indx}
+            for i in range(1,n+1):
+                m[i]=n*[0]
+
+            matrix_df2=pd.DataFrame(data=m)
+
+            st.session_state["matrix_df2"]=matrix_df2.fillna(0)
+            if 'matrix_df2' in st.session_state:
+                st.write('In the table below, please input the matrix that defines your semi-metric in relation to the basis you utilized for the structure constants.')
+                matrix_df2=st.data_editor(st.session_state.matrix_df2, hide_index=True, disabled=["i-j"], key='matrixdf2')
+            if st.button("Compute Dual Connection", type='primary'):
+                    st.session_state["matrix_df2"]=matrix_df2
+                    m_c=matrix_df2.columns[1:]
+                    metric2=matrix_df2[m_c].to_numpy()
+                    if (np.array_equal(metric2.transpose(), metric2)) and (np.linalg.det(metric2) !=0):
+                        st.session_state["metric2"]=metric2
+                        Lstar={}
+                        for i in range(1,n+1):
+                            A=np.matmul(np.matmul(metric2,lic[i]),np.linalg.inv(metric2))
+                            Lstar[i]=A
+                        with st.spinner('Computing Dual Connection matrixes'):
+                            sleep(1)
+                            st.markdown('The matrix representations $L^{*}_{e_{i}}$ of dual connection $ \\nabla^{*}_{e_{i}} $ respect to the basis $\\{ e_{i} \\}$ are:')
+                            for i in range(1,n+1):
+                                st.markdown(r'$ L^{*}_{e_{'+str(i)+r'}} = ' + bmatrix(Lstar[i]) + r' $')
+                    else:
+                        st.error("Your matrix does not define a Semi-metric. Rebemer that you need a symmetric and non-degenerate matrix")
+
 
 
         else:
