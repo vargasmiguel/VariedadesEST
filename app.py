@@ -1,3 +1,6 @@
+# TODO: Todas las tablas deben recibir floats (como funciona en structure)
+
+
 import pandas as pd
 import streamlit as st
 import numpy as np
@@ -134,7 +137,7 @@ with steps[2]:
                     indx.append(str(i))
                 m={"i-j":indx}
                 for i in range(1,n+1):
-                    m[i]=n*[0]
+                    m[i]=n*[0.0]
 
                 matrix_df=pd.DataFrame(data=m)
 
@@ -269,7 +272,7 @@ with steps[3]:
             temp=pd.DataFrame()
 
             for i in range(1,n+1):
-                temp[f"e_{i}"] = n*[0]
+                temp[f"e_{i}"] = n*[0.0]
             lic_df={}   # Dataframes de los e_k e_i, k=1...n
             lic={}      # Arrays de numpy de los e_k e_i
             for i in range(1,n+1):
@@ -342,11 +345,11 @@ with steps[3]:
                 indx.append(str(i))
             m={"i-j":indx}
             for i in range(1,n+1):
-                m[i]=n*[0]
+                m[i]=n*[0.0]
 
             matrix_df2=pd.DataFrame(data=m)
 
-            st.session_state["matrix_df2"]=matrix_df2.fillna(0)
+            st.session_state["matrix_df2"]=matrix_df2.fillna(0.0)
             if 'matrix_df2' in st.session_state:
                 st.write('In the table below, please input the matrix that defines your semi-metric in relation to the basis you utilized for the structure constants.')
                 matrix_df2=st.data_editor(st.session_state.matrix_df2, hide_index=True, disabled=["i-j"], key='matrixdf2')
@@ -358,8 +361,8 @@ with steps[3]:
                         st.session_state["metric2"]=metric2
                         Lstar={}
                         for i in range(1,n+1):
-                            A=np.matmul(np.matmul(metric2,lic[i]),np.linalg.inv(metric2))
-                            Lstar[i]=A
+                            A=np.matmul(np.matmul(metric2,lic[i]),np.linalg.inv(-1*metric2)) #Usamos el -1 en la metrica para evitar el display de -0. en Lstar
+                            Lstar[i]=np.transpose(A)
                         with st.spinner('Computing Dual Connection matrixes'):
                             sleep(1)
                             st.markdown('The matrix representations $L^{*}_{e_{i}}$ of dual connection $ \\nabla^{*}_{e_{i}} $ respect to the basis $\\{ e_{i} \\}$ are:')
